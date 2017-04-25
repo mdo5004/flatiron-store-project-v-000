@@ -3,6 +3,8 @@ class Cart < ActiveRecord::Base
     has_many :items, through: :line_items
     belongs_to :user
 
+#    after_create :assign_current_cart
+
     def total
         item_total = 0
         line_items.each do |line_item|
@@ -41,4 +43,12 @@ class Cart < ActiveRecord::Base
     def submitted?
         status == "submitted" 
     end
+
+#    def assign_current_cart
+#
+#        if !!user
+#            user.current_cart = self 
+#        end
+#        
+#    end
 end
