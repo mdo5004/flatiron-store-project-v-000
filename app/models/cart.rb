@@ -5,8 +5,8 @@ class Cart < ActiveRecord::Base
 
     def total
         item_total = 0
-        items.each do |item|
-            item_total += item.price
+        line_items.each do |line_item|
+            item_total += (line_item.item.price * line_item.quantity.to_f)
         end
         item_total
     end
@@ -19,16 +19,26 @@ class Cart < ActiveRecord::Base
             if li.persisted?
                 li.update(quantity: li.quantity+1)
             end
-            li
+            return li
         end
     end
+    
+    def checkout
+        line_items.each do |li|
+            item = Item.find(li.item_id)
+            item.update(inventory: item.inventory - li.quantity) 
+        end
+        self.submit
+        
+        user.update(current_cart:nil)
+        
+    end
+    
     def submit
-        self.status = "Submitted"
-        self.submitted = true
-        self.save
+        self.update(status:"submitted")
         Order.create(cart_id: self.id)        
     end
     def submitted?
-        status == "Submitted" || submitted 
+        status == "submitted" 
     end
 end

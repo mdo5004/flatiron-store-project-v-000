@@ -5,17 +5,20 @@ class User < ActiveRecord::Base
     :recoverable, :rememberable, :trackable, :validatable
 
     has_many :carts
-
+#    attr_accessor :current_cart
     def current_cart=(cart)
         if cart.is_a? Cart 
-            @cart = cart
-        elsif cart
-            @cart = Cart.find_by(id: cart)
+            self.current_cart_id = cart.id
+        elsif !!cart
+            self.current_cart_id = cart
         else
-            @cart = nil
+            self.current_cart_id = nil
         end
+    
+        self.save
     end
     def current_cart
-        @cart
+        
+        Cart.find_by(id: self.current_cart_id)
     end
 end

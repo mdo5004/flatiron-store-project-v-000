@@ -1,8 +1,8 @@
 class LineItemsController < ApplicationController
     def create        
         cart = current_cart
-        if cart.submitted?
-            cart = Cart.create
+        if cart.nil? || cart.submitted?
+            cart = Cart.create(user_id: current_user.id)
             current_user.current_cart = cart
         end
         item_added = cart.add_item(params[:item_id])
