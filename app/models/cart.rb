@@ -1,4 +1,3 @@
-require 'pry'
 class Cart < ActiveRecord::Base
     has_many :line_items
     has_many :items, through: :line_items
@@ -12,13 +11,24 @@ class Cart < ActiveRecord::Base
         item_total
     end
     def add_item(item_id)
+        if submitted?
+            return false
+        end
         if Item.find_by(id:item_id)
             li = line_items.where(:cart_id => id, :item_id => item_id).first_or_initialize
             if li.persisted?
                 li.update(quantity: li.quantity+1)
             end
-
             li
         end
+    end
+    def submit
+        self.status = "Submitted"
+        self.submitted = true
+        self.save
+        Order.create(cart_id: self.id)        
+    end
+    def submitted?
+        status == "Submitted" || submitted 
     end
 end
