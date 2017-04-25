@@ -2,7 +2,7 @@ class CartsController < ApplicationController
     before_action :signed_in?
     def checkout
         
-        raise current_user.inspect
+#        raise current_user.inspect
         @cart = current_user.current_cart
         if @cart.nil? 
             @cart = current_user.carts.last
